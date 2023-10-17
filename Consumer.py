@@ -1,5 +1,5 @@
 import argparse
-
+import boto3
 
 def consume():
     parser = argparse.ArgumentParser(
@@ -13,8 +13,12 @@ def consume():
 
     args = parser.parse_args()
 
-    print(args.read_bucket)
-
+    s3 = boto3.client('s3')
+    response = s3.list_objects_v2(
+        Bucket=args.read_bucket,
+        MaxKeys=1
+    )
+    print(response.get('Contents')[0].get('Key'))
 
 if __name__ == '__main__':
     consume()
