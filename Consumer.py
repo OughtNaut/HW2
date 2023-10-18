@@ -1,5 +1,8 @@
 import argparse
 import boto3
+import time
+import json
+
 
 def consume():
     parser = argparse.ArgumentParser(
@@ -14,11 +17,40 @@ def consume():
     args = parser.parse_args()
 
     s3 = boto3.client('s3')
-    response = s3.list_objects_v2(
+
+    while True:
+        request_key = get_single_key(s3, args)
+        if request_key is not None:
+            process_request(request_key, args)
+        else:
+            time.sleep(.1)
+
+
+def get_single_key(client, args):
+    response = client.list_objects_v2(
         Bucket=args.read_bucket,
         MaxKeys=1
     )
-    print(response.get('Contents')[0].get('Key'))
+    return response.get('Contents')[0].get('Key')
 
+
+def process_request(client, request_key, args):
+    request = client.get_object(
+        Bucket=args.read_bucket,
+        Key=request_key
+    )
+    request_controller(request)
+    client.delete_object(
+        Bucket=args.read_bucket,
+        Key=request_key
+    )
+
+
+def request_controller(request):
+    pass
+
+class WidgetFactory():
+    def create_widget(self, request):
+        request = json.loads(request)
 if __name__ == '__main__':
     consume()
