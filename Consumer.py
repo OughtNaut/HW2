@@ -31,7 +31,10 @@ def get_single_key(client, args):
         Bucket=args.read_bucket,
         MaxKeys=1
     )
-    return response.get('Contents')[0].get('Key')
+    contents = response.get('Contents')
+    if contents is not None:
+        return contents[0].get('Key')
+    return None
 
 
 def process_request(client, request_key, args):
@@ -47,9 +50,11 @@ def process_request(client, request_key, args):
 
 
 def request_controller(client, request, args):
-    # print(type(request))
-    # request = json.loads(request)
+
+    request = json.loads(request.get("Body").read())
+    print(request)
     request_type = request.get('type')
+    print(request_type)
     if request_type == 'create':
         if args.write_bucket is not None:
             create_widget_s3(client, request, args)
@@ -64,11 +69,20 @@ def request_controller(client, request, args):
 
 
 def create_widget_dynamo(request_dictionary, args):
+    widget = {
+        'id': request_dictionary.get('widgetId'),
+        'owner': request_dictionary.get('owner'),
+        'label': request_dictionary.get('label'),
+        'description': request_dictionary.get('description'),
+    }
+    for attribute in request_dictionary.get('otherAttributes'):
+        widget[attribute.get('name')]=attribute.get('value')
     # I modified this from a code snippet found here https://medium.com/@NotSoCoolCoder/handling-json-data-for-dynamodb-using-python-6bbd19ee884e
-    boto3.resource('dynamodb').Table(args.write_table).put_item(request_dictionary)
+    boto3.resource('dynamodb').Table(args.write_table).put_item(Item=widget)
 
 
 def create_widget_s3(client, request_dictionary, args):
+    print('create s3 ')
     owner = request_dictionary.get('owner').lower().replace(' ', '-')
     widget_id = request_dictionary.get('widgetId')
     request_json = json.dumps(request_dictionary)
