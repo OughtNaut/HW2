@@ -2,6 +2,7 @@ import argparse
 import boto3
 import time
 import json
+import logging
 
 
 def consume():
@@ -50,11 +51,8 @@ def process_request(client, request_key, args):
 
 
 def request_controller(client, request, args):
-
     request = json.loads(request.get("Body").read())
-    print(request)
     request_type = request.get('type')
-    print(request_type)
     if request_type == 'create':
         if args.write_bucket is not None:
             create_widget_s3(client, request, args)
@@ -76,8 +74,9 @@ def create_widget_dynamo(request_dictionary, args):
         'description': request_dictionary.get('description'),
     }
     for attribute in request_dictionary.get('otherAttributes'):
-        widget[attribute.get('name')]=attribute.get('value')
-    # I modified this from a code snippet found here https://medium.com/@NotSoCoolCoder/handling-json-data-for-dynamodb-using-python-6bbd19ee884e
+        widget[attribute.get('name')] = attribute.get('value')
+    # I modified this from a code snippet found here
+    # https://medium.com/@NotSoCoolCoder/handling-json-data-for-dynamodb-using-python-6bbd19ee884e
     boto3.resource('dynamodb').Table(args.write_table).put_item(Item=widget)
 
 
@@ -91,7 +90,6 @@ def create_widget_s3(client, request_dictionary, args):
         Bucket=args.write_bucket,
         Key=f"widgets/{owner}/{widget_id}"
     )
-
 
 
 if __name__ == '__main__':
