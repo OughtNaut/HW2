@@ -60,10 +60,10 @@ def request_controller(client, request, args):
             create_widget_dynamo(request, args)
     if request_type == "delete":
         # Todo handle delete requests in future
-        return
+        return None
     if request_type == "update":
         # Todo handle update requests in future
-        return
+        return None
 
 
 def create_widget_dynamo(request_dictionary, args):
@@ -81,7 +81,6 @@ def create_widget_dynamo(request_dictionary, args):
 
 
 def create_widget_s3(client, request_dictionary, args):
-    print('create s3 ')
     owner = request_dictionary.get('owner').lower().replace(' ', '-')
     widget_id = request_dictionary.get('widgetId')
     request_json = json.dumps(request_dictionary)
