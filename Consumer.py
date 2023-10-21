@@ -1,11 +1,9 @@
 import argparse
 import sys
-
 import boto3
 import time
 import json
 import logging
-
 
 logger = logging.getLogger('consumerLogger')
 logger.setLevel(logging.DEBUG)
@@ -14,12 +12,12 @@ file_handler = logging.FileHandler('consumer.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
-def consume():
 
+def consume():
     parser = argparse.ArgumentParser(
         prog='Consumer.py',
         description='Consumes Widget requests from given s3 bucket',
-        epilog=''
+        epilog='Use ctrl-c to exit program.'
     )
     parser.add_argument('-rb', '--read_bucket')
     parser.add_argument('-wb', '--write_bucket')
@@ -51,7 +49,7 @@ def get_single_key(client, args):
     if contents is not None:
         logger.debug("Retrieved key from AWS s3")
         return contents[0].get('Key')
-    logger.debug("No objects found in s3 bucket.")
+    logger.warning("No objects found in s3 bucket.")
     return None
 
 
