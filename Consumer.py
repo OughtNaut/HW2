@@ -79,8 +79,19 @@ def get_request_cache(s3, sqs, args):
             MaxNumberOfMessages=10,
             WaitTimeSeconds=1.5
         )
+        delete_batch = []
         for each in response.get("Messages"):
+            delete_batch.append(
+                {
+                    'Id': each.get('MessageId'),
+                    'ReceiptHandle': each.get('ReceiptHandle')
+                }
+            )
             key_cache.append(each.get('Body'))
+        sqs.delete_message_batch(
+            QueueUrl=args.read_queue,
+            Entries=delete_batch
+        )
         logger.debug(f"Retrieved {len(key_cache)} requests from sqs queue.")
         return key_cache
 
@@ -94,9 +105,14 @@ def process_request(client, request, args):
         if args.write_table is not None:
             create_widget_dynamo(request, args)
     if request_type == "delete":
-        # Todo handle delete requests in future
+        if args.write_bucket is not None:
+            delete_widget_s3(client, request, args)
+        if args.write_table is not None:
+            delete_widget_dynamo(request, args)
         return None
     if request_type == "update":
+        if args.write_bucket is not None:
+            create_widget_s3(client, request, args)
         # Todo handle update requests in future
         return None
 
@@ -117,6 +133,21 @@ def create_widget_dynamo(request_dictionary, args):
     logger.debug(f"Widget saved to dynamodb table {args.write_table}.")
 
 
+def delete_widget_dynamo(request, args):
+    boto3.client('dynamodb').delete_item(
+        TableName=args.write_table,
+        Key={"id": request.get("requestId")}
+    )
+    logger.debug("Widget deleted from dynamodb table.")
+
+def update_widget_dynamo(request_dictionary, args):
+    boto3.client('dynamodb').update_item(
+        TableName=args.write_table,
+        Key={"id": request_dictionary.get("requestId")},
+        update_expression="Set size ="
+    )
+
+
 def create_widget_s3(client, request_dictionary, args):
     owner = request_dictionary.get('owner').lower().replace(' ', '-')
     widget_id = request_dictionary.get('widgetId')
@@ -127,6 +158,16 @@ def create_widget_s3(client, request_dictionary, args):
         Key=f"widgets/{owner}/{widget_id}"
     )
     logger.debug(f"Widget saved to s3 bucket {args.write_bucket}.")
+
+
+def delete_widget_s3(client, request, args):
+    owner = request.get('owner').lower().replace(' ', '-')
+    widget_id = request.get('widgetId')
+    client.delete_object(
+        Bucket=args.write_bucket,
+        Key=f"Widgets/{owner}/{widget_id}"
+    )
+    logger.debug(f"Widgets/{owner}/{widget_id} deleted from bucket.")
 
 
 if __name__ == '__main__':
