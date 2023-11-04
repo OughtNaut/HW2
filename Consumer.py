@@ -141,10 +141,12 @@ def delete_widget_dynamo(request, args):
     logger.debug("Widget deleted from dynamodb table.")
 
 def update_widget_dynamo(request_dictionary, args):
+    expression, values = get_update_expression(request_dictionary)
     boto3.client('dynamodb').update_item(
         TableName=args.write_table,
         Key={"id": request_dictionary.get("requestId")},
-        update_expression="Set size ="
+        Update_Expression=expression,
+        ExpressionAttributeValues=values
     )
 
 
@@ -169,6 +171,21 @@ def delete_widget_s3(client, request, args):
     )
     logger.debug(f"Widgets/{owner}/{widget_id} deleted from bucket.")
 
+def get_update_expression(request_dictionary):
+    expression = "SET "
+    expression += f":owner = owner "
+    expression += f":label = label "
+    expression += f":description = description "
+    for other in request_dictionary.get('otherAttributes'):
+        expression += f":{other.get('name')} = {other.get('name')} "
+    values = {
+        ':owner': {"S": request_dictionary.get('owner')},
+        ':label': {"S": request_dictionary.get('label')},
+        ':description': {"S": request_dictionary.get('description')}
+    }
+    for other in request_dictionary.get('otherAttributes'):
+        values[other.get('name')] = other.get('value')
+    return expression, values
 
 if __name__ == '__main__':
     consume()
