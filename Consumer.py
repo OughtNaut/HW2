@@ -22,17 +22,18 @@ def consume():
     parser.add_argument('-rb', '--read_bucket')
     parser.add_argument('-wb', '--write_bucket')
     parser.add_argument('-wt', '--write_table')
+    parser.add_argument('-rq', '--read_queue')
 
     args = parser.parse_args()
 
     s3 = boto3.client('s3')
+    sqs = boto3.client('sqs')
     logger.debug("Program Start")
     try:
         while True:
-            request_key = get_single_key(s3, args)
-            if request_key is not None:
-                logger.debug(f"found key {request_key} in bucket {args.read_bucket}")
-                process_request(s3, request_key, args)
+            request_cache = get_request_cache(s3, sqs, args)
+            for request in request_cache:
+                process_request(s3, request, args)
             else:
                 time.sleep(.1)
     except KeyboardInterrupt:
@@ -40,33 +41,51 @@ def consume():
         sys.exit(0)
 
 
-def get_single_key(client, args):
-    response = client.list_objects_v2(
-        Bucket=args.read_bucket,
-        MaxKeys=1
-    )
-    contents = response.get('Contents')
-    if contents is not None:
-        logger.debug("Retrieved key from AWS s3")
-        return contents[0].get('Key')
-    logger.warning("No objects found in s3 bucket.")
-    return None
+def get_request_cache(s3, sqs, args):
+    key_cache = []
+    # When reading from bucket
+    if args.read_bucket is not None:
+        response = s3.list_objects_v2(
+            Bucket=args.read_bucket,
+            MaxKeys=1
+        )
+        contents = response.get('Contents')
+        if contents is not None:
+            logger.debug("Retrieved key from AWS s3")
+            key = contents[0].get('Key')
+            request = s3.get_object(
+                Bucket=args.read_bucket,
+                Key=key
+            )
+            s3.delete_object(
+                Bucket=args.read_bucket,
+                Key=key
+            )
+            logger.debug(f"found request {request.get('requestId')} in bucket {args.read_bucket}")
+            key_cache.append(request)
+            return key_cache
+        logger.warning("No objects found in s3 bucket.")
+        return key_cache
+    # When reading from queue
+    elif args.read_queue is not None:
+        response = sqs.receive_message(
+            QueueUrl=args.read_queue,
+            AttributeNames=[
+                'All'
+            ],
+            MessageAttributeNames=[
+                'string'
+            ],
+            MaxNumberOfMessages=10,
+            WaitTimeSeconds=1.5
+        )
+        for each in response.get("Messages"):
+            key_cache.append(each.get('Body'))
+        logger.debug(f"Retrieved {len(key_cache)} requests from sqs queue.")
+        return key_cache
 
 
-def process_request(client, request_key, args):
-    request = client.get_object(
-        Bucket=args.read_bucket,
-        Key=request_key
-    )
-    request_controller(client, request, args)
-    client.delete_object(
-        Bucket=args.read_bucket,
-        Key=request_key
-    )
-    logger.debug(f"Request from bucket {args.read_bucket} retrieved and deleted.")
-
-
-def request_controller(client, request, args):
+def process_request(client, request, args):
     request = json.loads(request.get("Body").read())
     request_type = request.get('type')
     if request_type == 'create':
@@ -80,6 +99,7 @@ def request_controller(client, request, args):
     if request_type == "update":
         # Todo handle update requests in future
         return None
+
 
 
 def create_widget_dynamo(request_dictionary, args):
