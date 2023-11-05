@@ -5,6 +5,8 @@ import time
 import json
 import logging
 
+import botocore
+
 logger = logging.getLogger('consumerLogger')
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -33,8 +35,9 @@ def consume():
         while True:
             request_cache = get_request_cache(s3, sqs, args)
             for request in request_cache:
-                request = json.loads(request.get("Body").read())
-                process_request(s3, request, args)
+                request_dictionary = json.loads(request)
+                print(f"processing an {request_dictionary.get('type')} request.")
+                process_request(s3, request_dictionary, args)
             else:
                 time.sleep(.1)
     except KeyboardInterrupt:
@@ -81,6 +84,8 @@ def get_request_cache(s3, sqs, args):
             WaitTimeSeconds=1
         )
         delete_batch = []
+        if response.get('Messages') == None:
+            return []
         for each in response.get("Messages"):
             delete_batch.append(
                 {
@@ -143,16 +148,19 @@ def delete_widget_dynamo(request, args):
     logger.debug("Widget deleted from dynamodb table.")
 
 def update_widget_dynamo(request_dictionary, args):
-    expression, values, names = get_update_expression(request_dictionary)
-    response = boto3.client('dynamodb').update_item(
-        TableName=args.write_table,
-        Key={"id": {"S": request_dictionary.get("widgetId")}},
-        UpdateExpression=expression,
-        ExpressionAttributeNames=names,
-        ExpressionAttributeValues=values
+    try:
+        expression, values, names = get_update_expression(request_dictionary)
+        response = boto3.client('dynamodb').update_item(
+            TableName=args.write_table,
+            Key={"id": {"S": request_dictionary.get("widgetId")}},
+            UpdateExpression=expression,
+            ExpressionAttributeNames=names,
+            ExpressionAttributeValues=values
 
-    )
-    logger.debug(f"Widget {request_dictionary.get('widgetId')} updated.")
+        )
+        logger.debug(f"Widget {request_dictionary.get('widgetId')} updated.")
+    except (AttributeError, botocore.exceptions.ParamValidationError) as e:
+        logger.warning(f"There was an issue with an update attempt. {e}")
 
 
 def create_widget_s3(client, request_dictionary, args):
