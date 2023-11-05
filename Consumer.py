@@ -137,7 +137,7 @@ def create_widget_dynamo(request_dictionary, args):
 def delete_widget_dynamo(request, args):
     boto3.client('dynamodb').delete_item(
         TableName=args.write_table,
-        Key={"id": request.get("requestId")}
+        Key={"id": {"S": request.get("widgetId")}}
     )
     logger.debug("Widget deleted from dynamodb table.")
 

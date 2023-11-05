@@ -134,7 +134,7 @@ class ConsumerTest(unittest.TestCase):
         self.assertEqual(request, json.loads(object.get('Body').read()))
 
     @moto.mock_dynamodb
-    def test_create_widget_dynamo(self):
+    def test_create_delete_widget_dynamo(self):
         boto3.client('dynamodb').create_table(
             AttributeDefinitions=[
                 {
@@ -163,6 +163,17 @@ class ConsumerTest(unittest.TestCase):
             }
         )
         self.assertEqual(widget.get('widgetId'), retrieved.get('Item').get('id').get('S'))
+        Consumer.delete_widget_dynamo(ConsumerTest.get_test_widget(self), args)
+        retrieved = boto3.client('dynamodb').get_item(
+            TableName='test_table',
+            Key={
+                'id': {
+                    'S': '8123f304-f23f-440b-a6d3-80e979fa4cd6'
+                }
+            }
+        )
+        self.assertEqual(retrieved.get('Item'), None)
+
 
 
     @moto.mock_s3
@@ -182,8 +193,7 @@ class ConsumerTest(unittest.TestCase):
             print(o)
         self.assertTrue(size == 0)
 
-    @moto.mock_dynamodb
-    def test_delete_widget_dynamo(self):
-        
+
+
 if __name__ == '__main__':
     unittest.main()
