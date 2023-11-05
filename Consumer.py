@@ -78,7 +78,7 @@ def get_request_cache(s3, sqs, args):
                 'string'
             ],
             MaxNumberOfMessages=10,
-            WaitTimeSeconds=1.5
+            WaitTimeSeconds=1
         )
         delete_batch = []
         for each in response.get("Messages"):
@@ -114,7 +114,8 @@ def process_request(client, request, args):
     if request_type == "update":
         if args.write_bucket is not None:
             create_widget_s3(client, request, args)
-        # Todo handle update requests in future
+        if args.write_table is not None:
+            update_widget_dynamo(request, args)
         return None
 
 
@@ -142,13 +143,16 @@ def delete_widget_dynamo(request, args):
     logger.debug("Widget deleted from dynamodb table.")
 
 def update_widget_dynamo(request_dictionary, args):
-    expression, values = get_update_expression(request_dictionary)
-    boto3.client('dynamodb').update_item(
+    expression, values, names = get_update_expression(request_dictionary)
+    response = boto3.client('dynamodb').update_item(
         TableName=args.write_table,
-        Key={"id": request_dictionary.get("requestId")},
-        Update_Expression=expression,
+        Key={"id": {"S": request_dictionary.get("widgetId")}},
+        UpdateExpression=expression,
+        ExpressionAttributeNames=names,
         ExpressionAttributeValues=values
+
     )
+    logger.debug(f"Widget {request_dictionary.get('widgetId')} updated.")
 
 
 def create_widget_s3(client, request_dictionary, args):
@@ -173,20 +177,32 @@ def delete_widget_s3(client, request, args):
     logger.debug(f"Widgets/{owner}/{widget_id} deleted from bucket.")
 
 def get_update_expression(request_dictionary):
+    names = {
+        '#owner': 'owner',
+        '#label': 'label',
+        '#description': 'description'
+    }
     expression = "SET "
-    expression += f":owner = owner "
-    expression += f":label = label "
-    expression += f":description = description "
+    update_items = []
+    update_items.append("#owner = :owner")
+    update_items.append("#label = :label")
+    update_items.append("#description = :description")
+
     for other in request_dictionary.get('otherAttributes'):
-        expression += f":{other.get('name')} = {other.get('name')} "
+        attribute_name = other.get('name')
+        names[f"#{attribute_name.replace('-','_')}"] = f"{attribute_name}"
+        update_items.append(f"#{attribute_name.replace('-','_')} = :{attribute_name.replace('-','_')}")
+    expression += ', '.join(update_items)  # Separate update items with commas
     values = {
-        ':owner': {"S": request_dictionary.get('owner')},
-        ':label': {"S": request_dictionary.get('label')},
-        ':description': {"S": request_dictionary.get('description')}
+        ":owner": {"S": request_dictionary.get('owner')},
+        ":label": {"S": request_dictionary.get('label')},
+        ":description": {"S": request_dictionary.get('description')}
     }
     for other in request_dictionary.get('otherAttributes'):
-        values[other.get('name')] = other.get('value')
-    return expression, values
+        attribute_name = other.get('name')
+        values[f":{attribute_name.replace('-','_')}"] = {"S": other.get('value')}
+
+    return expression, values, names
 
 if __name__ == '__main__':
     consume()

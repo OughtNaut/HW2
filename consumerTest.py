@@ -1,5 +1,6 @@
 import argparse
 import json
+import time
 
 import boto3
 import unittest
@@ -67,6 +68,13 @@ class ConsumerTest(unittest.TestCase):
         s3 = boto3.client('s3')
         sqs = boto3.client('sqs')
         s3.create_bucket(Bucket='test_bucket')
+        sqs.create_queue(QueueName='test_queue')
+        sqs.send_message(QueueUrl='test_queue',
+                         MessageBody='1')
+        sqs.send_message(QueueUrl='test_queue',
+                         MessageBody='1')
+        sqs.send_message(QueueUrl='test_queue',
+                         MessageBody='1')
         self.assertListEqual(Consumer.get_request_cache(s3, sqs, args), [])
 
         s3.put_object(
@@ -76,7 +84,9 @@ class ConsumerTest(unittest.TestCase):
         )
         request_cache = Consumer.get_request_cache(s3, sqs, args)
         self.assertTrue(len(request_cache) != 0)
-
+        args = argparse.Namespace(read_bucket=None, read_queue='test_queue')
+        self.assertEqual(len(Consumer.get_request_cache(s3,sqs,args)),3)
+        self.assertListEqual(Consumer.get_request_cache(s3, sqs, args), [])
     @moto.mock_s3
     @moto.mock_sqs
     def test_process_request_create(self):
@@ -98,28 +108,6 @@ class ConsumerTest(unittest.TestCase):
         size = sum(1 for _ in bucket.objects.all())
         self.assertEqual(size, 0)
 
-    # @moto.mock_s3
-    # def test_request_controller(self):
-    #     args = argparse.Namespace(read_bucket='test_bucket', write_bucket='test_write_bucket', write_table=None)
-    #     s3 = boto3.client('s3')
-    #     s3.create_bucket(Bucket='test_bucket')
-    #     request = ConsumerTest.get_test_widget(self)
-    #     request['type'] = 'delete'
-    #     s3.put_object(
-    #         Body=json.dumps(request),
-    #         Bucket='test_bucket',
-    #         Key='test_key'
-    #     )
-    #     self.assertIsNone(Consumer.process_request(s3, s3.get_object(Bucket='test_bucket', Key='test_key'), args))
-    #
-    #     request['type'] = 'update'
-    #     s3.put_object(
-    #         Body=json.dumps(request),
-    #         Bucket='test_bucket',
-    #         Key='test_key2'
-    #     )
-    #     self.assertIsNone(Consumer.process_request(s3, s3.get_object(Bucket='test_bucket', Key='test_key2'), args))
-
     @moto.mock_s3
     def test_create_widget_s3(self):
         s3 = boto3.client('s3')
@@ -134,7 +122,7 @@ class ConsumerTest(unittest.TestCase):
         self.assertEqual(request, json.loads(object.get('Body').read()))
 
     @moto.mock_dynamodb
-    def test_create_delete_widget_dynamo(self):
+    def test_delete_widget_dynamo(self):
         boto3.client('dynamodb').create_table(
             AttributeDefinitions=[
                 {
@@ -189,9 +177,40 @@ class ConsumerTest(unittest.TestCase):
         self.assertTrue(size == 1)
         Consumer.delete_widget_s3(s3, self.get_delete_widget(), args)
         size = sum(1 for _ in bucket.objects.all())
-        for o in bucket.objects.all():
-            print(o)
         self.assertTrue(size == 0)
+
+
+    @moto.mock_dynamodb
+    def test_update_widget_dynamo(self):
+        boto3.client('dynamodb').create_table(
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'id',
+                    'AttributeType': 'S'
+                }
+            ],
+            TableName='test_table',
+            KeySchema=[
+                {
+                    'AttributeName': 'id',
+                    'KeyType': 'HASH'
+                }
+            ],
+            BillingMode='PAY_PER_REQUEST'
+        )
+        widget = ConsumerTest.get_test_widget(self)
+        args = argparse.Namespace(read_bucket='test_bucket', write_bucket='test_write_bucket', write_table='test_table')
+        Consumer.create_widget_dynamo(widget, args)
+        Consumer.update_widget_dynamo(self.get_test_update_widget(), args)
+        retrieved = boto3.client('dynamodb').get_item(
+            TableName='test_table',
+            Key={
+                'id': {
+                    'S': '8123f304-f23f-440b-a6d3-80e979fa4cd6'
+                }
+            }
+        )
+        self.assertEqual(retrieved.get('Item').get('owner').get("S"),"Mary Leet")
 
 
 
