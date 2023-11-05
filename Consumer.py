@@ -33,6 +33,7 @@ def consume():
         while True:
             request_cache = get_request_cache(s3, sqs, args)
             for request in request_cache:
+                request = json.loads(request.get("Body").read())
                 process_request(s3, request, args)
             else:
                 time.sleep(.1)
@@ -97,7 +98,7 @@ def get_request_cache(s3, sqs, args):
 
 
 def process_request(client, request, args):
-    request = json.loads(request.get("Body").read())
+
     request_type = request.get('type')
     if request_type == 'create':
         if args.write_bucket is not None:
@@ -165,9 +166,9 @@ def create_widget_s3(client, request_dictionary, args):
 def delete_widget_s3(client, request, args):
     owner = request.get('owner').lower().replace(' ', '-')
     widget_id = request.get('widgetId')
-    client.delete_object(
+    response = client.delete_object(
         Bucket=args.write_bucket,
-        Key=f"Widgets/{owner}/{widget_id}"
+        Key=f"widgets/{owner}/{widget_id}"
     )
     logger.debug(f"Widgets/{owner}/{widget_id} deleted from bucket.")
 
