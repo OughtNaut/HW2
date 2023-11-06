@@ -28,8 +28,8 @@ def consume():
 
     args = parser.parse_args()
 
-    s3 = boto3.client('s3')
-    sqs = boto3.client('sqs')
+    s3 = boto3.client('s3', region_name='us-east-1')
+    sqs = boto3.client('sqs', region_name='us-east-1')
     logger.debug("Program Start")
     try:
         while True:
