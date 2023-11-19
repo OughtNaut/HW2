@@ -13,13 +13,53 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 def handle_api_request(event, context):
-    request_json = json.loads(event)
-    if is_post(request_json):
-        pass
+    if is_post(event):
+        response = create_request(event)
+    else:
+        response = generate_bad_method_response()
+
+    return response
+
+
+def is_post(event):
+    if event["httpMethod"] == "POST":
+        logger.debug("Received POST Request, from API.")
+        return True
+    logger.error(f"Invalid http request method {event['httpMethod']}")
+    return False
+
+def generate_bad_method_response():
+    error_message = {
+        "error": {
+            "message": "Failed to handle the request"
+        }
+    }
+    return {
+        "statusCode": 400,
+        "headers": {
+            "Content-Type": "application/json",
+        },
+        "body": json.dumps(error_message)
+    }
     pass
 
+def create_request(event):
+    if valid_body(event):
+        pass
 
-def is_post(request_json):
+def valid_body(event):
+    body = event["body"]
+    required = ["requestId", "widgetId", "owner", "otherAttributes"]
+    if body["type"] not in ["create", "delete", "update"]:
+        logger.error(f"{body['type']} not a valid request type")
+        return False
+    for parameter in required:
+        if parameter not in body:
+            log_missing_required_parameter(parameter)
+            return False
+
+def log_missing_required_parameter(parameter):
+    logger.error(f"missing required parameter {parameter}.")
 
 if __name__ == '__main__':
     handle_api_request()
