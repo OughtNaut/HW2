@@ -8,11 +8,12 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 file_handler = logging.FileHandler('consumer.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
-
+queue_url = "https://sqs.us-east-1.amazonaws.com/453835586573/cs5260-requests"
 
 def handle_api_request(event, context):
+    event = json.loads(event)
     if is_post(event):
-        response = create_request(event)
+        response = create_request(event, queue_url)
     else:
         response = generate_bad_method_response()
 
@@ -41,11 +42,11 @@ def generate_bad_method_response():
     }
 
 
-def create_request(event):
+def create_request(event, queue_url):
     if valid_body(event):
         client = boto3.client("sqs")
         client.send_message(
-            QueueUrl="https://sqs.us-east-1.amazonaws.com/453835586573/cs5260-requests",
+            QueueUrl= queue_url,
             MessageBody=json.dumps(event["body"])
         )
         return {
@@ -61,7 +62,7 @@ def create_request(event):
 
 
 def valid_body(event):
-    body = event["body"]
+    body = json.loads(event["body"])
     required = ["requestId", "widgetId", "owner", "otherAttributes"]
     if body["type"] not in ["create", "delete", "update"]:
         logger.error(f"{body['type']} not a valid request type")
@@ -70,7 +71,7 @@ def valid_body(event):
         if parameter not in body:
             log_missing_required_parameter(parameter)
             return False
-
+    return True
 
 def log_missing_required_parameter(parameter):
     logger.error(f"missing required parameter {parameter}.")

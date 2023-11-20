@@ -1,7 +1,5 @@
 import argparse
 import json
-import time
-
 import boto3
 import unittest
 import moto
