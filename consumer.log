@@ -2718,3 +2718,145 @@ Invalid type for parameter ExpressionAttributeValues.:label.S, value: None, type
 2023-11-05 15:25:53,287 - DEBUG - Widget 98113d0b-4123-45f4-9ea6-02f7a95b690e updated.
 2023-11-05 15:25:53,710 - DEBUG - Widget 742c66ec-eb85-414f-9653-d70eb901e31d updated.
 2023-11-05 15:25:54,144 - DEBUG - Program exited on keyboard interrupt
+2023-11-19 16:18:05,006 - DEBUG - Widget saved to s3 bucket test_write_bucket.
+2023-11-19 16:18:05,301 - DEBUG - Widget saved to dynamodb table test_table.
+2023-11-19 16:18:05,309 - DEBUG - Widget deleted from dynamodb table.
+2023-11-19 16:18:05,634 - DEBUG - Widget saved to s3 bucket test_write_bucket.
+2023-11-19 16:18:05,744 - DEBUG - Widgets/mary-matthews/8123f304-f23f-440b-a6d3-80e979fa4cd6 deleted from bucket.
+2023-11-19 16:18:05,976 - WARNING - No objects found in s3 bucket.
+2023-11-19 16:18:05,979 - DEBUG - Retrieved key from AWS s3
+2023-11-19 16:18:05,982 - DEBUG - found request None in bucket test_bucket
+2023-11-19 16:18:05,995 - DEBUG - Retrieved 3 requests from sqs queue.
+2023-11-19 16:18:07,219 - DEBUG - Retrieved key from AWS s3
+2023-11-19 16:18:07,222 - DEBUG - found request None in bucket test_bucket
+2023-11-19 16:18:07,678 - DEBUG - Widget saved to dynamodb table test_table.
+2023-11-19 16:18:07,684 - DEBUG - Widget 8123f304-f23f-440b-a6d3-80e979fa4cd6 updated.
+2023-11-19 16:19:14,774 - DEBUG - Received POST Request, from API.
+2023-11-19 16:19:14,774 - ERROR - Invalid http request method GET
+2023-11-19 16:19:14,774 - ERROR - Invalid http request method PUT
+2023-11-19 16:19:14,774 - ERROR - Invalid http request method post
+2023-11-19 16:19:14,774 - ERROR - Invalid http request method 
+2023-11-19 16:30:53,333 - DEBUG - Received POST Request, from API.
+2023-11-19 16:30:53,333 - ERROR - Invalid http request method GET
+2023-11-19 16:30:53,333 - ERROR - Invalid http request method PUT
+2023-11-19 16:30:53,333 - ERROR - Invalid http request method post
+2023-11-19 16:30:53,333 - ERROR - Invalid http request method 
+2023-11-19 16:39:12,202 - DEBUG - Received POST Request, from API.
+2023-11-19 16:39:12,202 - ERROR - Invalid http request method GET
+2023-11-19 16:39:12,202 - ERROR - Invalid http request method PUT
+2023-11-19 16:39:12,202 - ERROR - Invalid http request method post
+2023-11-19 16:39:12,202 - ERROR - Invalid http request method 
+2023-11-19 16:39:50,901 - DEBUG - Received POST Request, from API.
+2023-11-19 16:39:50,902 - ERROR - Invalid http request method GET
+2023-11-19 16:39:50,902 - ERROR - Invalid http request method PUT
+2023-11-19 16:39:50,902 - ERROR - Invalid http request method post
+2023-11-19 16:39:50,902 - ERROR - Invalid http request method 
+2023-11-19 16:42:07,913 - DEBUG - Received POST Request, from API.
+2023-11-19 16:42:07,913 - ERROR - Invalid http request method GET
+2023-11-19 16:42:07,913 - ERROR - Invalid http request method PUT
+2023-11-19 16:42:07,913 - ERROR - Invalid http request method post
+2023-11-19 16:42:07,913 - ERROR - Invalid http request method 
+2023-11-19 16:43:14,934 - DEBUG - Received POST Request, from API.
+2023-11-19 16:43:14,934 - ERROR - Invalid http request method GET
+2023-11-19 16:43:14,934 - ERROR - Invalid http request method PUT
+2023-11-19 16:43:14,934 - ERROR - Invalid http request method post
+2023-11-19 16:43:14,934 - ERROR - Invalid http request method 
+2023-11-19 16:47:10,418 - DEBUG - Received POST Request, from API.
+2023-11-19 16:47:10,418 - ERROR - Invalid http request method GET
+2023-11-19 16:47:10,418 - ERROR - Invalid http request method PUT
+2023-11-19 16:47:10,418 - ERROR - Invalid http request method post
+2023-11-19 16:47:10,418 - ERROR - Invalid http request method 
+2023-11-19 16:47:56,196 - DEBUG - Received POST Request, from API.
+2023-11-19 16:47:56,196 - ERROR - Invalid http request method GET
+2023-11-19 16:47:56,196 - ERROR - Invalid http request method PUT
+2023-11-19 16:47:56,196 - ERROR - Invalid http request method post
+2023-11-19 16:47:56,196 - ERROR - Invalid http request method 
+2023-11-19 16:48:18,159 - DEBUG - Received POST Request, from API.
+2023-11-19 16:48:18,160 - ERROR - Invalid http request method GET
+2023-11-19 16:48:18,160 - ERROR - Invalid http request method PUT
+2023-11-19 16:48:18,160 - ERROR - Invalid http request method post
+2023-11-19 16:48:18,160 - ERROR - Invalid http request method 
+2023-11-19 16:48:59,922 - DEBUG - Received POST Request, from API.
+2023-11-19 16:48:59,922 - ERROR - Invalid http request method GET
+2023-11-19 16:48:59,922 - ERROR - Invalid http request method PUT
+2023-11-19 16:48:59,922 - ERROR - Invalid http request method post
+2023-11-19 16:48:59,922 - ERROR - Invalid http request method 
+2023-11-19 16:49:38,102 - DEBUG - Received POST Request, from API.
+2023-11-19 16:49:38,102 - ERROR - Invalid http request method GET
+2023-11-19 16:49:38,102 - ERROR - Invalid http request method PUT
+2023-11-19 16:49:38,102 - ERROR - Invalid http request method post
+2023-11-19 16:49:38,102 - ERROR - Invalid http request method 
+2023-11-19 16:49:59,244 - DEBUG - Received POST Request, from API.
+2023-11-19 16:49:59,244 - ERROR - Invalid http request method GET
+2023-11-19 16:49:59,244 - ERROR - Invalid http request method PUT
+2023-11-19 16:49:59,244 - ERROR - Invalid http request method post
+2023-11-19 16:49:59,244 - ERROR - Invalid http request method 
+2023-11-19 16:50:25,399 - DEBUG - Received POST Request, from API.
+2023-11-19 16:50:25,399 - ERROR - Invalid http request method GET
+2023-11-19 16:50:25,399 - ERROR - Invalid http request method PUT
+2023-11-19 16:50:25,399 - ERROR - Invalid http request method post
+2023-11-19 16:50:25,399 - ERROR - Invalid http request method 
+2023-11-19 16:53:17,527 - DEBUG - Received POST Request, from API.
+2023-11-19 16:53:17,527 - ERROR - Invalid http request method GET
+2023-11-19 16:53:17,527 - ERROR - Invalid http request method PUT
+2023-11-19 16:53:17,527 - ERROR - Invalid http request method post
+2023-11-19 16:53:17,527 - ERROR - Invalid http request method 
+2023-11-19 17:04:21,214 - DEBUG - Received POST Request, from API.
+2023-11-19 17:04:21,214 - ERROR - Invalid http request method GET
+2023-11-19 17:04:21,214 - ERROR - Invalid http request method PUT
+2023-11-19 17:04:21,215 - ERROR - Invalid http request method post
+2023-11-19 17:04:21,215 - ERROR - Invalid http request method 
+2023-11-19 17:05:12,060 - DEBUG - Received POST Request, from API.
+2023-11-19 17:05:12,060 - ERROR - Invalid http request method GET
+2023-11-19 17:05:12,060 - ERROR - Invalid http request method PUT
+2023-11-19 17:05:12,060 - ERROR - Invalid http request method post
+2023-11-19 17:05:12,060 - ERROR - Invalid http request method 
+2023-11-19 17:08:31,074 - DEBUG - Received POST Request, from API.
+2023-11-19 17:08:31,074 - ERROR - Invalid http request method GET
+2023-11-19 17:08:31,074 - ERROR - Invalid http request method PUT
+2023-11-19 17:08:31,074 - ERROR - Invalid http request method post
+2023-11-19 17:08:31,074 - ERROR - Invalid http request method 
+2023-11-19 17:09:35,229 - ERROR - missing required parameter requestId.
+2023-11-19 17:09:35,229 - DEBUG - Received POST Request, from API.
+2023-11-19 17:09:35,230 - ERROR - Invalid http request method GET
+2023-11-19 17:09:35,230 - ERROR - Invalid http request method PUT
+2023-11-19 17:09:35,230 - ERROR - Invalid http request method post
+2023-11-19 17:09:35,230 - ERROR - Invalid http request method 
+2023-11-19 17:28:01,630 - ERROR - missing required parameter requestId.
+2023-11-19 17:28:01,631 - DEBUG - Received POST Request, from API.
+2023-11-19 17:28:01,631 - ERROR - Invalid http request method GET
+2023-11-19 17:28:01,631 - ERROR - Invalid http request method PUT
+2023-11-19 17:28:01,631 - ERROR - Invalid http request method post
+2023-11-19 17:28:01,631 - ERROR - Invalid http request method 
+2023-11-19 17:28:53,487 - ERROR - missing required parameter requestId.
+2023-11-19 17:28:53,487 - DEBUG - Received POST Request, from API.
+2023-11-19 17:28:53,487 - ERROR - Invalid http request method GET
+2023-11-19 17:28:53,487 - ERROR - Invalid http request method PUT
+2023-11-19 17:28:53,487 - ERROR - Invalid http request method post
+2023-11-19 17:28:53,487 - ERROR - Invalid http request method 
+2023-11-19 17:29:53,003 - ERROR - missing required parameter requestId.
+2023-11-19 17:29:53,003 - DEBUG - Received POST Request, from API.
+2023-11-19 17:29:53,003 - ERROR - Invalid http request method GET
+2023-11-19 17:29:53,003 - ERROR - Invalid http request method PUT
+2023-11-19 17:29:53,003 - ERROR - Invalid http request method post
+2023-11-19 17:29:53,004 - ERROR - Invalid http request method 
+2023-11-19 17:34:53,595 - ERROR - missing required parameter requestId.
+2023-11-19 17:34:53,596 - DEBUG - Received POST Request, from API.
+2023-11-19 17:34:53,596 - ERROR - Invalid http request method GET
+2023-11-19 17:34:53,596 - ERROR - Invalid http request method PUT
+2023-11-19 17:34:53,596 - ERROR - Invalid http request method post
+2023-11-19 17:34:53,596 - ERROR - Invalid http request method 
+2023-11-19 17:34:53,596 - ERROR - missing required parameter owner.
+2023-11-19 17:57:50,165 - DEBUG - Received POST Request, from API.
+2023-11-19 17:57:50,165 - ERROR - Invalid http request method GET
+2023-11-19 17:57:50,165 - ERROR - Invalid http request method PUT
+2023-11-19 17:57:50,165 - ERROR - Invalid http request method post
+2023-11-19 17:57:50,165 - ERROR - Invalid http request method 
+2023-11-19 17:57:50,165 - ERROR - missing required parameter owner.
+2023-11-19 17:58:48,173 - ERROR - missing required parameter requestId.
+2023-11-19 17:58:48,173 - DEBUG - Received POST Request, from API.
+2023-11-19 17:58:48,174 - ERROR - Invalid http request method GET
+2023-11-19 17:58:48,174 - ERROR - Invalid http request method PUT
+2023-11-19 17:58:48,174 - ERROR - Invalid http request method post
+2023-11-19 17:58:48,174 - ERROR - Invalid http request method 
+2023-11-19 17:58:48,174 - ERROR - missing required parameter owner.
