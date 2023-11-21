@@ -44,7 +44,6 @@ class WidgetRequestHandlerTest(unittest.TestCase):
         sqs = boto3.client("sqs")
         queue_url = sqs.create_queue(QueueName="cs5260-requests")["QueueUrl"]
         event = json.loads(self.get_valid_event())
-        print(type(event))
         response = WidgetRequestHandler.create_request(event, queue_url)
         self.assertIsNotNone(response)
         body = event["body"]
